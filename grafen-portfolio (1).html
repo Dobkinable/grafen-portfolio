@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRAFEN — Портфолио</title>
+<script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.92/build/spline-viewer.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600&family=Unbounded:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F4F0;--surface:#EDECE7;--card:#fff;--text:#1A1A18;--muted:#6B6B65;--faint:#9E9E97;--border:rgba(26,26,24,.10);--border2:rgba(26,26,24,.18);--fd:'Unbounded',sans-serif;--fb:'Manrope',sans-serif;--r:12px;--rp:40px}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--fb);background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+nav{position:sticky;top:0;z-index:100;background:rgba(245,244,240,.88);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:.5px solid var(--border);padding:0 2.5rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{font-family:var(--fd);font-size:12px;font-weight:400;letter-spacing:.2em;color:var(--text);text-decoration:none}
+.nav-sub{font-size:11px;color:var(--faint);letter-spacing:.05em}
+
+.hero{position:relative;border-bottom:.5px solid var(--border);overflow:hidden}
+.hero-spline{position:relative;width:100%;height:520px;background:#000}
+.hero-spline spline-viewer{position:absolute;inset:0;width:100%;height:100%}
+.hero-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:2.5rem;background:linear-gradient(to top,rgba(245,244,240,.92) 0%,rgba(245,244,240,.4) 40%,transparent 70%);pointer-events:none}
+.hero-eyebrow{font-size:11px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;margin-bottom:.9rem}
+.hero-h{font-family:var(--fd);font-size:clamp(34px,5.5vw,68px);font-weight:300;line-height:1.06;letter-spacing:-.03em}
+.hero-h em{font-style:normal;color:var(--muted)}
+.hero-stat{margin-top:.75rem;display:flex;align-items:baseline;gap:.5rem}
+.hero-n{font-family:var(--fd);font-size:clamp(36px,6vw,72px);font-weight:300;letter-spacing:-.04em;color:var(--border2);line-height:1}
+.hero-nl{font-size:11px;letter-spacing:.12em;color:var(--faint);text-transform:uppercase}
+
+@media(max-width:600px){.hero-spline{height:380px}}
+
+.filters{padding:1.4rem 2.5rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center;border-bottom:.5px solid var(--border)}
+.fbtn{font-family:var(--fb);font-size:11.5px;font-weight:500;letter-spacing:.05em;padding:6px 15px;border-radius:var(--rp);border:.5px solid var(--border2);background:transparent;color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap}
+.fbtn:hover{background:var(--surface);color:var(--text)}
+.fbtn.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.fsep{width:.5px;height:18px;background:var(--border);margin:0 4px;flex-shrink:0}
+
+.grid-wrap{padding:1.75rem 2.5rem 4rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+
+.card{background:var(--card);border-radius:var(--r);overflow:hidden;border:.5px solid var(--border);cursor:pointer;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;position:relative;aspect-ratio:4/3;animation:fu .38s ease both}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(26,26,24,.11);border-color:var(--border2)}
+.card img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s ease}
+.card:hover img{transform:scale(1.04)}
+.card-ov{position:absolute;inset:0;background:linear-gradient(to top,rgba(15,15,12,.65) 0%,transparent 55%);opacity:0;transition:opacity .22s;display:flex;align-items:flex-end;padding:12px 14px}
+.card:hover .card-ov{opacity:1}
+.card-name{font-size:12px;font-weight:500;color:#fff;letter-spacing:.03em}
+.card-ico{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.15);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .22s}
+.card:hover .card-ico{opacity:1}
+.card-ico svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+
+.empty{grid-column:1/-1;padding:5rem 2rem;text-align:center;color:var(--faint);font-size:14px}
+
+.lb{position:fixed;inset:0;z-index:999;background:rgba(8,8,7,.93);backdrop-filter:blur(8px);display:none;flex-direction:column;align-items:center;justify-content:center}
+.lb.open{display:flex}
+.lb-in{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:56px 76px 72px}
+.lb-img{max-width:100%;max-height:100%;object-fit:contain;border-radius:var(--r);transition:opacity .2s ease,transform .2s ease}
+.lb-bar{position:absolute;bottom:0;left:0;right:0;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem}
+.lb-nm{font-size:12px;color:rgba(255,255,255,.50);letter-spacing:.07em}
+.lb-ct{font-family:var(--fd);font-size:11px;font-weight:300;color:rgba(255,255,255,.30);letter-spacing:.1em}
+.lb-close{position:absolute;top:18px;right:22px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);border:.5px solid rgba(255,255,255,.13);border-radius:50%;cursor:pointer;transition:background .18s}
+.lb-close:hover{background:rgba(255,255,255,.14)}
+.lb-close svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round}
+.lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px;height:46px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.06);border:.5px solid rgba(255,255,255,.11);border-radius:50%;cursor:pointer;transition:background .18s}
+.lb-nav:hover{background:rgba(255,255,255,.13)}
+.lb-nav svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.lb-prev{left:18px}
+.lb-next{right:18px}
+
+footer{padding:1.75rem 2.5rem;border-top:.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.ft-brand{font-family:var(--fd);font-size:10px;font-weight:400;letter-spacing:.22em;color:var(--faint)}
+.ft-link{font-size:12px;color:var(--faint);text-decoration:none;letter-spacing:.04em;transition:color .18s}
+.ft-link:hover{color:var(--text)}
+
+@media(max-width:600px){
+  nav{padding:0 1.25rem}
+  .hero{padding:3rem 1.25rem 2.5rem;grid-template-columns:1fr}
+  .hero-stat{text-align:left}
+  .filters{padding:1.25rem}
+  .grid-wrap{padding:1.25rem 1.25rem 3rem}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}
+  footer{padding:1.5rem 1.25rem}
+  .lb-in{padding:50px 54px 68px}
+  .lb-prev{left:8px}
+  .lb-next{right:8px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#">GRAFEN</a>
+  <span class="nav-sub">grafen.design</span>
+</nav>
+
+<section class="hero">
+  <div class="hero-spline">
+    <spline-viewer url="https://prod.spline.design/5HKJnIuJWPbQAuQU/scene.splinecode" style="width:100%;height:100%;"></spline-viewer>
+    <div class="hero-overlay">
+      <div class="hero-eyebrow">Фирменный стиль для малого бизнеса</div>
+      <h1 class="hero-h">Логотипы<br><em>&amp; айдентика</em></h1>
+      <div class="hero-stat">
+        <span class="hero-n" id="hCount">50</span>
+        <span class="hero-nl">работ</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="filters" id="filters"></div>
+
+<div class="grid-wrap">
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer>
+  <span class="ft-brand">GRAFEN</span>
+  <a class="ft-link" href="https://grafen.design" target="_blank" rel="noopener">grafen.design</a>
+</footer>
+
+<div class="lb" id="lb" role="dialog" aria-modal="true">
+  <div class="lb-in">
+    <button class="lb-close" id="lbClose" aria-label="Закрыть">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="lb-nav lb-prev" id="lbP" aria-label="Назад">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <img class="lb-img" id="lbImg" alt="" />
+    <button class="lb-nav lb-next" id="lbN" aria-label="Вперёд">
+      <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="lb-bar">
+      <span class="lb-nm" id="lbNm"></span>
+      <span class="lb-ct" id="lbCt"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── КОНФИГ — меняй только это ──────────────────────────────
+const GITHUB_USER = 'Dobkinable';
+const GITHUB_REPO = 'grafen-portfolio';
+const BASE_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/`;
+const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/`;
+// ───────────────────────────────────────────────────────────
+
+const CATS = ["Все","Логотипы","Визитки / бланки","Фирстиль / брендбук","Баннеры","Соцсети","Мерч / атрибутика","Меню / буклеты","КП"];
+
+let ALL = [], cat = "Все", vis = [], idx = 0;
+
+const grid = document.getElementById("grid");
+const hc = document.getElementById("hCount");
+const lb = document.getElementById("lb");
+const lbImg = document.getElementById("lbImg");
+const lbNm = document.getElementById("lbNm");
+const lbCt = document.getElementById("lbCt");
+
+// Загрузка файлов из GitHub API
+async function loadFiles(){
+  grid.innerHTML = '<div class="empty">Загрузка...</div>';
+  try {
+    // Поддержка пагинации — до 1000 файлов
+    let files = [];
+    let page = 1;
+    while(true){
+      const res = await fetch(`${API_URL}?per_page=100&page=${page}`);
+      if(!res.ok) throw new Error(res.status);
+      const data = await res.json();
+      if(!data.length) break;
+      files = files.concat(data);
+      if(data.length < 100) break;
+      page++;
+    }
+    ALL = files
+      .filter(f => /\.(jpg|jpeg|png|webp)$/i.test(f.name))
+      .map(f => ({
+        n: f.name.replace(/\.(jpg|jpeg|png|webp)$/i,''),
+        url: BASE_URL + encodeURIComponent(f.name)
+      }));
+    hc.textContent = ALL.length;
+    rFilters();
+    rGrid();
+  } catch(e){
+    grid.innerHTML = `<div class="empty">Ошибка загрузки: ${e.message}</div>`;
+  }
+}
+
+function imgUrl(item){ return item.url; }
+
+function rFilters(){
+  const w = document.getElementById("filters");
+  w.innerHTML = CATS.map((c,i) =>
+    (i===1?'<div class="fsep"></div>':'') +
+    `<button class="fbtn${c===cat?' on':''}" data-c="${c}">${c}</button>`
+  ).join("");
+  w.querySelectorAll(".fbtn").forEach(b =>
+    b.addEventListener("click",()=>{cat=b.dataset.c;rFilters();rGrid();})
+  );
+}
+
+function rGrid(){
+  vis = cat==="Все" ? [...ALL] : ALL.filter(()=>false);
+  hc.textContent = vis.length;
+  if(!vis.length){grid.innerHTML='<div class="empty">Нет работ в этой категории</div>';return;}
+  grid.innerHTML = vis.map((item,i) => `
+    <div class="card" data-i="${i}" tabindex="0" role="button" aria-label="${item.n}" style="animation-delay:${Math.min(i*.03,.6)}s">
+      <img src="${imgUrl(item)}" alt="${item.n}" loading="lazy"/>
+      <div class="card-ov"><span class="card-name">${item.n}</span></div>
+      <div class="card-ico">
+        <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+      </div>
+    </div>`).join("");
+  grid.querySelectorAll(".card").forEach(c=>{
+    c.addEventListener("click",()=>openLb(+c.dataset.i));
+    c.addEventListener("keydown",e=>{if(e.key==="Enter")openLb(+c.dataset.i);});
+  });
+}
+
+function openLb(i){idx=i;upLb();lb.classList.add("open");document.body.style.overflow="hidden";}
+
+function upLb(){
+  lbImg.style.cssText="opacity:0;transform:scale(.97)";
+  const it=vis[idx];
+  lbImg.onload=()=>{lbImg.style.cssText="opacity:1;transform:scale(1)";};
+  lbImg.src=imgUrl(it);lbImg.alt=it.n;
+  lbNm.textContent=it.n;
+  lbCt.textContent=`${idx+1} / ${vis.length}`;
+}
+
+function closeLb(){lb.classList.remove("open");lbImg.src="";document.body.style.overflow="";}
+function mv(d){idx=(idx+d+vis.length)%vis.length;upLb();}
+
+document.getElementById("lbClose").onclick=closeLb;
+document.getElementById("lbP").onclick=()=>mv(-1);
+document.getElementById("lbN").onclick=()=>mv(1);
+lb.addEventListener("click",e=>{if(e.target===lb)closeLb();});
+document.addEventListener("keydown",e=>{
+  if(!lb.classList.contains("open"))return;
+  if(e.key==="Escape")closeLb();
+  if(e.key==="ArrowLeft")mv(-1);
+  if(e.key==="ArrowRight")mv(1);
+});
+
+let tx=0;
+lb.addEventListener("touchstart",e=>{tx=e.touches[0].clientX;},{passive:true});
+lb.addEventListener("touchend",e=>{const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>50)mv(d<0?1:-1);});
+
+loadFiles();
+</script>
+</body>
+</html>
